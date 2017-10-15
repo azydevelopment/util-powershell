@@ -1,0 +1,1 @@
+Copy-Item -Path "C:\git\util-powershell\*" -Include "*.ps1" -Destination "C:\util"
