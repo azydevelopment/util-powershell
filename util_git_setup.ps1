@@ -5,7 +5,10 @@ Enum EXIT_CODE {
 }
 
 function PrintError($msg) {
-    Write-Error "$msg"
+    PushCtx | Out-Null
+    $host.ui.RawUI.ForegroundColor = "Red"
+    Write-Host "ERROR: $msg"
+    PopCtx | Out-Null
 }
 
 function ReadHost($prompt) {
@@ -91,22 +94,51 @@ function Confirm($prompt) {
 }
 
 ### PROGRAM MAIN
+
+function NewDevCfg {
+    return [PSCustomObject] @{
+        "gitDir"     = $null
+        "includeDir" = $null
+        "libDir"     = $null
+    }
+}
+
 function Main() {
-    $gitDir = $null
+    $devCfg = NewDevCfg
     
-    # ask user where to put the git directory
+    # ask user where to put the development directories
     do {
-        $gitDir = ReadHost("Select git directory")
-    } while (-not(ValidatePath($gitDir)))
+        $devCfg.gitDir = ReadHost("Select GIT directory")
+    } while (-not(ValidatePath($devCfg.gitDir)))
     
-    $gitDirUpper = $gitDir.toUpper()
-    if (-not(Confirm("Make `"$gitDirUpper`" your primary git directory?"))) {
+    do {
+        $devCfg.includeDir = ReadHost("Select INCLUDE directory")
+    } while (-not(ValidatePath($devCfg.includeDir)))
+
+    do {
+        $devCfg.libDir = ReadHost("Select LIB directory")
+    } while (-not(ValidatePath($devCfg.libDir)))
+
+    # confirm desired setup parameters
+    Write-Host "`n--------"
+    Write-Host "GIT directory      : " $devCfg.gitDir
+    Write-Host "INCLUDE directory  : " $devCfg.includeDir
+    Write-Host "LIB directory      : " $devCfg.libDir
+    Write-Host "--------`n"
+    if (-not(Confirm("Create environment using the above config?"))) {
         return [EXIT_CODE]::INCOMPLETE
     }
 
-    # set git environment variable
-    [Environment]::SetEnvironmentVariable("GIT_DIR", "$gitDir", "User")
+    # set environment variables
+    [Environment]::SetEnvironmentVariable("GIT", "$($devCfg.gitDir)", "User")
+    [Environment]::SetEnvironmentVariable("INCLUDE", "$($devCfg.includeDir)", "User")
+    [Environment]::SetEnvironmentVariable("LIB", "$($devCfg.libDir)", "User")
 
+    # create directories if don't exist
+    New-Item -ItemType Directory -Force -Path $devCfg.gitDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $devCfg.includeDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $devCfg.libDir | Out-Null
+    
     # save context
     PushCtx | Out-Null
 
@@ -119,7 +151,7 @@ function Main() {
     "https://github.com/azydevelopment/util-src-flattener.git",
     "https://github.com/azydevelopment/template-readme.git"
 
-    Set-Location $gitDir
+    Set-Location $devCfg.gitDir
     foreach ($gitRepo in $gitRepos) {
         PushCtx | Out-Null
         Write-Host "`n------------------"
