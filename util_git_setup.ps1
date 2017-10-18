@@ -50,6 +50,7 @@ function ScriptMain() {
     "https://github.com/azydevelopment/util-powershell.git",
     "https://github.com/azydevelopment/preferences-store.git",
     "https://github.com/azydevelopment/core.git",
+    "https://github.com/azydevelopment/embedded.git",
     "https://github.com/azydevelopment/template-atmelstudio.git",
     "https://github.com/azydevelopment/util-src-flattener.git",
     "https://github.com/azydevelopment/template-readme.git"
