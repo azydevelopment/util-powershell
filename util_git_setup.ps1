@@ -3,6 +3,7 @@ function NewDevCfg {
         "gitDir"     = $null
         "includeDir" = $null
         "libDir"     = $null
+        "utilDir"    = $null
     }
 }
 
@@ -22,11 +23,16 @@ function ScriptMain() {
         $devCfg.libDir = ReadHost("Select LIB directory")
     } while (-not(ValidatePath($devCfg.libDir)))
 
+    do {
+        $devCfg.utilDir = ReadHost("Select UTIL directory")
+    } while (-not(ValidatePath($devCfg.utilDir)))
+
     # confirm desired setup parameters
     Write-Host "`n--------"
     Write-Host "GIT directory      : " $devCfg.gitDir
     Write-Host "INCLUDE directory  : " $devCfg.includeDir
     Write-Host "LIB directory      : " $devCfg.libDir
+    Write-Host "UTIL directory     : " $devCfg.utilDir
     Write-Host "--------`n"
     if (-not(Confirm("Create environment using the above config?"))) {
         return [EXIT_CODE]::INCOMPLETE
@@ -36,6 +42,7 @@ function ScriptMain() {
     [Environment]::SetEnvironmentVariable("GIT", "$($devCfg.gitDir)", "User")
     [Environment]::SetEnvironmentVariable("INCLUDE", "$($devCfg.includeDir)", "User")
     [Environment]::SetEnvironmentVariable("LIB", "$($devCfg.libDir)", "User")
+    [Environment]::SetEnvironmentVariable("UTIL", "$($devCfg.utilDir)", "User")
 
     # create directories if don't exist
     New-Item -ItemType Directory -Force -Path $devCfg.gitDir | Out-Null
@@ -71,6 +78,8 @@ function ScriptMain() {
     # restore context
     PopCtx | Out-Null
     
+    # TODO IMPLEMENT: Copy utils into the util folder
+
     # if we got here, all is good
     return [EXIT_CODE]::SUCCESS
 }
@@ -80,4 +89,4 @@ function ScriptCleanup {
 }
 
 # use the script runner to execute ScriptMain
-.\util_powershell_runner.ps1
+util_powershell_runner.ps1
