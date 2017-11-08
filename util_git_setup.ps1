@@ -48,6 +48,7 @@ function ScriptMain() {
     New-Item -ItemType Directory -Force -Path $devCfg.gitDir | Out-Null
     New-Item -ItemType Directory -Force -Path $devCfg.includeDir | Out-Null
     New-Item -ItemType Directory -Force -Path $devCfg.libDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $devCfg.utilDir | Out-Null
     
     # save context
     PushCtx | Out-Null
@@ -72,6 +73,9 @@ function ScriptMain() {
         git clone $gitRepo
     }
     
+    # copy utils into the $env:UTIL folder
+    Copy-Item .\util-powershell\*.ps1 $env:UTIL
+
     # copy clang-format config file into $env:GIT for use
     Copy-Item .\preferences-store\clang\.clang-format .\
     
@@ -89,4 +93,4 @@ function ScriptCleanup {
 }
 
 # use the script runner to execute ScriptMain
-util_powershell_runner.ps1
+.\util_powershell_runner.ps1
