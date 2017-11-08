@@ -93,4 +93,10 @@ function ScriptCleanup {
 }
 
 # use the script runner to execute ScriptMain
-.\util_powershell_runner.ps1
+
+if (Test-Path .\util_powershell_runner.ps1) {
+    .\util_powershell_runner.ps1
+}
+else {
+    Invoke-Expression "${env:UTIL}\util_powershell_runner.ps1"
+}
