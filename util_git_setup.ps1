@@ -7,6 +7,18 @@ function NewDevCfg {
     }
 }
 
+function PopulateUtil {
+    Copy-Item .\util-powershell\*.ps1 $env:UTIL
+}
+
+function PopulateInclude {
+    Copy-Item ${env:GIT}\core\core\core\include\* $env:INCLUDE -Recurse -Force
+    Copy-Item ${env:GIT}\embedded\embedded\embedded\include\* $env:INCLUDE -Recurse -Force
+}
+
+function PopulateLib {
+}
+
 function ScriptMain() {
     $devCfg = NewDevCfg
     
@@ -74,7 +86,16 @@ function ScriptMain() {
     }
     
     # copy utils into the $env:UTIL folder
-    Copy-Item .\util-powershell\*.ps1 $env:UTIL
+    Write-Host "`nPopulating UTIL folder..."
+    PopulateUtil
+
+    # copy include files into the $env:INCLUDE folder
+    Write-Host "Populating INCLUDE folder..."
+    PopulateInclude
+
+    # build and copy libs into the $env:LIB folder
+    Write-Host "Populating LIB folder..."
+    PopulateLib
 
     # copy clang-format config file into $env:GIT for use
     Copy-Item .\preferences-store\clang\.clang-format .\
@@ -82,18 +103,18 @@ function ScriptMain() {
     # restore context
     PopCtx | Out-Null
     
-    # TODO IMPLEMENT: Copy utils into the util folder
-
     # if we got here, all is good
     return [EXIT_CODE]::SUCCESS
 }
 
 function ScriptCleanup {
     Remove-Item -Path Function:\NewDevCfg
+    Remove-Item -Path Function:\PopulateUtil
+    Remove-Item -Path Function:\PopulateInclude
+    Remove-Item -Path Function:\PopulateLib
 }
 
 # use the script runner to execute ScriptMain
-
 if (Test-Path .\util_powershell_runner.ps1) {
     .\util_powershell_runner.ps1
 }
