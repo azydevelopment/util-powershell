@@ -119,5 +119,5 @@ if (Test-Path .\util_powershell_runner.ps1) {
     .\util_powershell_runner.ps1
 }
 else {
-    Invoke-Expression "${env:UTIL}\util_powershell_runner.ps1"
+    & "${env:UTIL}\util_powershell_runner.ps1"
 }
