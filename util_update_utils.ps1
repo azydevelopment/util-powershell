@@ -1,1 +1,1 @@
-Copy-Item -Path "C:\git\util-powershell\*" -Include "*.ps1" -Destination "C:\util"
+Copy-Item -Path "${env:GIT}\util-powershell\*" -Include "*.ps1" -Destination $env:UTIL
