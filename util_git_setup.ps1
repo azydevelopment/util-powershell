@@ -114,7 +114,7 @@ function ScriptCleanup {
     Remove-Item -Path Function:\PopulateLib
 }
 
-# use the script runner to execute ScriptMain
+# use the script runner to execute ScriptMain (either in current path or in $env:UTIL)
 if (Test-Path .\util_powershell_runner.ps1) {
     .\util_powershell_runner.ps1
 }
