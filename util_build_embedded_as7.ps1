@@ -5,13 +5,19 @@ function ScriptMain() {
         "core\core\core\core_as7.cppproj"
     )
 
+    $libOutput = $(
+        "azydev\embedded",
+        "abdeveng\core"
+    )
+
     $buildConfigs = 
     "DEBUG",
     "RELEASE"
 
     $exitCode = [EXIT_CODE]::SUCCESS
 
-    foreach ($project in $projects) {
+    for ($i = 0; $i -lt $projects.Count; $i++) {
+        $project = $projects[$i]
         # TODO HACK: Magic slashes
         $projectFileName = Split-Path $project -Leaf
         $projectSubDir = Split-Path $project -Parent
@@ -33,23 +39,24 @@ function ScriptMain() {
             $dateTime = Get-Date -Format FileDateTime
 
             $logFileName = $(
-                ($projectFileName -Replace "[.]", "_")
-                , "${dateTime}.txt"
+                ($projectFileName -Replace "[.]", "_"),
+                "${dateTime}.txt"
             ) -Join "_"
 
+            # TODO HACK: Magic string
             $logFileDir = [io.path]::combine(
-                $env:TEMP
-                , "build" # TODO HACK: Magic string
-                , $projectSubDir
-                , $buildConfig
+                $env:TEMP,
+                "build", 
+                $projectSubDir,
+                $buildConfig
             ).toLower()
 
             # create log directory if doesn't exist
             New-Item -ItemType Directory -Force -Path $logFileDir | Out-Null
 
             $logFilePath = [io.path]::combine(
-                $logFileDir
-                , $logFileName
+                $logFileDir,
+                $logFileName
             ).toLower()
 
             # build using Atmel Studio command line
@@ -77,21 +84,20 @@ function ScriptMain() {
 
             # deploy the build results to the ${env:LIB} directory
             $libDir = [io.path]::combine(
-                $projectDir
-                , $buildConfig
+                $projectDir,
+                $buildConfig
             ).toLower()
 
             $libDeployDir = [io.path]::combine(
-                $env:LIB
-                , $projectSubDir
-                , $buildConfig
+                $env:LIB,
+                $libOutput[$i],
+                $buildConfig
             ).toLower()
 
             # create lib deploy directory if doesn't exist
             New-Item -ItemType Directory -Force -Path $libDeployDir | Out-Null
 
             Write-Host "Lib: " -NoNewLine
-            Write-Host $libDir
             Write-Host $libDeployDir
 
             # TODO HACK: Magic strings
