@@ -12,8 +12,9 @@ function PopulateUtil {
 }
 
 function PopulateInclude {
-    Copy-Item ${env:GIT}\core\core\core\include\* $env:INCLUDE -Recurse -Force
-    Copy-Item ${env:GIT}\embedded\embedded\embedded\include\* $env:INCLUDE -Recurse -Force
+    # TODO HACK: Magic strings
+    Copy-Item ${env:GIT}\core\core\abdeveng_core\include\* $env:INCLUDE -Recurse -Force
+    Copy-Item ${env:GIT}\embedded\embedded\azydev_embedded\include\* $env:INCLUDE -Recurse -Force
 }
 
 function PopulateLib {
