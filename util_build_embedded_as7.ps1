@@ -1,8 +1,8 @@
 function ScriptMain() {
 
     $projects = $(
-        "embedded\embedded\embedded\embedded_as7.cppproj",
-        "core\core\core\core_as7.cppproj"
+        "embedded\embedded\azydev_embedded\azydev_embedded_as7.cppproj",
+        "core\core\abdeveng_core\abdeveng_core_as7.cppproj"
     )
 
     $libOutput = $(
