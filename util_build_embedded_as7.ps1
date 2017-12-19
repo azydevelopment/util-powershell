@@ -1,8 +1,8 @@
 function ScriptMain() {
 
     $projects = $(
-        "embedded\embedded\azydev_embedded\azydev_embedded_as7.cppproj",
-        "core\core\abdeveng_core\abdeveng_core_as7.cppproj"
+        "core\core\abdeveng_core\abdeveng_core_as7.cppproj",
+        "embedded\embedded\azydev_embedded\azydev_embedded_as7.cppproj"
     )
 
     $libOutput = $(
@@ -23,9 +23,14 @@ function ScriptMain() {
         $projectSubDir = Split-Path $project -Parent
         $projectDir = "${env:GIT}\$projectSubDir"
         $projectPath = "${env:GIT}\$project"
+        $projectIncludeDir = "${env:GIT}\$projectSubDir\include"
 
         # TODO HACK: Magic string
         $atmelStudioPath = "C:\Program Files (x86)\Atmel\Studio\7.0\AtmelStudio.exe"
+
+        # deploy the include files to the ${env:INCLUDE} directory
+        # TODO HACK: Magic strings
+        Copy-Item ${projectIncludeDir}\* $env:INCLUDE -Recurse -Force
 
         foreach ($buildConfig in $buildConfigs) {
             Write-Host "`n------------------------------"
