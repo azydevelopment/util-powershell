@@ -71,11 +71,11 @@ function ScriptMain() {
             $output = Get-Content -Path $logFilePath
             PushCtx | Out-Null
             Write-Host "Build: " -NoNewLine
-            if ($output -match "Build FAILED") {
+            if ($output -match "1 failed") {
                 $host.ui.RawUI.ForegroundColor = "Red"
                 Write-Host "FAIL"
             }
-            elseif ($output -match "Build SUCCEEDED") {
+            elseif ($output -match "1 succeeded") {
                 $host.ui.RawUI.ForegroundColor = "Green"
                 Write-Host "SUCCESS"
             }
