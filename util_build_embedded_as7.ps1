@@ -1,3 +1,6 @@
+# TODO HACK: Does this variable even go away? Ideally this comes down as a ScriptMain function parameter
+$inputs = $args
+
 function ScriptMain() {
 
     $projects = $(
@@ -13,6 +16,20 @@ function ScriptMain() {
     $buildConfigs = 
     "DEBUG",
     "RELEASE"
+
+    if ($inputs.Count -gt 1) {
+        Write-Host "Too many args"
+        return [EXIT_CODE]::ERROR
+    }
+    elseif ($inputs.Count -eq 1) {
+        if ($buildConfigs -Contains $inputs[0]) {
+            $buildConfigs = @($inputs[0])
+        }
+        else {
+            Write-Host "Build config doesn't exist"
+            return [EXIT_CODE]::ERROR
+        }
+    }
 
     $exitCode = [EXIT_CODE]::SUCCESS
 
@@ -37,7 +54,7 @@ function ScriptMain() {
             PushCtx | Out-Null
             $host.ui.RawUI.ForegroundColor = "Blue"
             Write-Host "Building: ${env:GIT}\$project"
-            Write-Host "Config: $buildConfig"
+            Write-Host "Config: $($buildConfig.toUpper())"
             PopCtx | Out-Null
             Write-Host "------------------------------"
 
