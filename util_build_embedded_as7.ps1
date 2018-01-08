@@ -85,12 +85,13 @@ function ScriptMain() {
             Start-Process -Wait $atmelStudioPath -ArgumentList "$projectPath /build $buildConfig /out $logFilePath"
 
             # print the build results
-            $output = Get-Content -Path $logFilePath
+            $output = (Get-Content -Path $logFilePath) -join "`n"
             PushCtx | Out-Null
             Write-Host "Build: " -NoNewLine
             if ($output -match "1 failed") {
                 $host.ui.RawUI.ForegroundColor = "Red"
                 Write-Host "FAIL"
+                Write-Host "\n$output"
             }
             elseif ($output -match "1 succeeded") {
                 $host.ui.RawUI.ForegroundColor = "Green"
