@@ -9,8 +9,8 @@ function ScriptMain() {
     )
 
     $libOutput = $(
-        "azydev\embedded",
-        "abdeveng\core"
+        "abdeveng\core",
+        "azydev\embedded"
     )
 
     $buildConfigs = 
