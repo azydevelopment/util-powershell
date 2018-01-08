@@ -91,7 +91,7 @@ function ScriptMain() {
             if ($output -match "1 failed") {
                 $host.ui.RawUI.ForegroundColor = "Red"
                 Write-Host "FAIL"
-                Write-Host "\n$output"
+                Write-Host "`n$output"
             }
             elseif ($output -match "1 succeeded") {
                 $host.ui.RawUI.ForegroundColor = "Green"
