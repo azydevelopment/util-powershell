@@ -74,7 +74,8 @@ function ScriptMain() {
     "https://github.com/azydevelopment/embedded.git",
     "https://github.com/azydevelopment/template-atmelstudio.git",
     "https://github.com/azydevelopment/util-src-flattener.git",
-    "https://github.com/azydevelopment/template-readme.git"
+    "https://github.com/azydevelopment/template-readme.git",
+    "https://github.com/azydevelopment/test-samd21.git"
 
     Set-Location $devCfg.gitDir
     foreach ($gitRepo in $gitRepos) {
