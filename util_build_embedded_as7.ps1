@@ -3,14 +3,16 @@ $inputs = $args
 
 function ScriptMain() {
 
-    $projects = $(
-        "core\core\abdeveng_core\abdeveng_core_as7.cppproj",
-        "embedded\embedded\azydev_embedded\azydev_embedded_as7.cppproj"
+    $projects = @(
+        $(
+            "embedded\embedded\azydev_embedded\azydev_embedded_as7.cppproj"
+        )
     )
 
-    $libOutput = $(
-        "abdeveng\core",
-        "azydev\embedded"
+    $libOutput = @(
+        $(
+            "azydev\embedded"
+        )
     )
 
     $buildConfigs = 
