@@ -3,15 +3,12 @@ $inputs = $args
 
 function ScriptMain() {
 
-    $projects = @(
-        $(
-            "embedded\embedded\azydev_embedded\azydev_embedded_as7.cppproj"
-        )
-    )
+    $solutionRelDir = "embedded\embedded"
+    $solutionCommonIncludeRelDir = "$solutionRelDir\common\include"
 
-    $libOutput = @(
+    $architectures = @(
         $(
-            "azydev\embedded"
+            "saml21"
         )
     )
 
@@ -33,16 +30,27 @@ function ScriptMain() {
         }
     }
 
+    # deploy the solution common include files to the ${env:INCLUDE} directory
+    # TODO HACK: Magic strings
+    Copy-Item ${env:GIT}\${solutionCommonIncludeRelDir}\* $env:INCLUDE -Recurse -Force
+
     $exitCode = [EXIT_CODE]::SUCCESS
 
-    for ($i = 0; $i -lt $projects.Count; $i++) {
-        $project = $projects[$i]
-        # TODO HACK: Magic slashes
-        $projectFileName = Split-Path $project -Leaf
-        $projectSubDir = Split-Path $project -Parent
-        $projectDir = "${env:GIT}\$projectSubDir"
-        $projectPath = "${env:GIT}\$project"
-        $projectIncludeDir = "${env:GIT}\$projectSubDir\include"
+    for ($i = 0; $i -lt $architectures.Count; $i++) {
+        $architecture = "$($architectures[$i])"
+        $projectFileName = "$architecture.cppproj"
+        $projectRelDir = "$solutionRelDir\$architecture"
+        $projectDir = "${env:GIT}\$projectRelDir"
+        $projectPath = "$projectDir\$projectFileName"
+        $projectIncludeDir = "$projectDir\include"
+
+        # TODO HACK: Magic string
+        $logFileDir = [io.path]::combine(
+            $env:TEMP,
+            "build", 
+            $projectRelDir,
+            $buildConfig
+        ).toLower()
 
         # TODO HACK: Magic string
         $atmelStudioPath = "C:\Program Files (x86)\Atmel\Studio\7.0\AtmelStudio.exe"
@@ -55,31 +63,24 @@ function ScriptMain() {
             Write-Host "`n------------------------------"
             PushCtx | Out-Null
             $host.ui.RawUI.ForegroundColor = "Blue"
-            Write-Host "Building: ${env:GIT}\$project"
+            Write-Host "Building: $projectPath"
             Write-Host "Config: $($buildConfig.toUpper())"
             PopCtx | Out-Null
             Write-Host "------------------------------"
 
             $dateTime = Get-Date -Format FileDateTime
 
+            # create log directory if doesn't exist
+            New-Item -ItemType Directory -Force -Path $logFileDir | Out-Null
+
             $logFileName = $(
                 ($projectFileName -Replace "[.]", "_"),
                 "${dateTime}.txt"
             ) -Join "_"
 
-            # TODO HACK: Magic string
-            $logFileDir = [io.path]::combine(
-                $env:TEMP,
-                "build", 
-                $projectSubDir,
-                $buildConfig
-            ).toLower()
-
-            # create log directory if doesn't exist
-            New-Item -ItemType Directory -Force -Path $logFileDir | Out-Null
-
             $logFilePath = [io.path]::combine(
                 $logFileDir,
+                $buildConfig,
                 $logFileName
             ).toLower()
 
@@ -113,20 +114,22 @@ function ScriptMain() {
                 $buildConfig
             ).toLower()
 
+            # TODO HACK: Magic strings
             $libDeployDir = [io.path]::combine(
                 $env:LIB,
-                $libOutput[$i],
+                "azydev",
+                "embedded",
                 $buildConfig
             ).toLower()
 
             # create lib deploy directory if doesn't exist
             New-Item -ItemType Directory -Force -Path $libDeployDir | Out-Null
 
-            Write-Host "Lib: " -NoNewLine
-            Write-Host $libDeployDir
-
             # TODO HACK: Magic strings
             Copy-Item -Path "${libDir}\*" -Include "*.a" -Destination $libDeployDir
+
+            Write-Host "Lib: " -NoNewLine
+            Write-Host $libDeployDir
 
             Write-Host "------------------------------"
         }
