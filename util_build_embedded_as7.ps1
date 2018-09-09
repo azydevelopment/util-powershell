@@ -45,14 +45,6 @@ function ScriptMain() {
         $projectIncludeDir = "$projectDir\include"
 
         # TODO HACK: Magic string
-        $logFileDir = [io.path]::combine(
-            $env:TEMP,
-            "build", 
-            $projectRelDir,
-            $buildConfig
-        ).toLower()
-
-        # TODO HACK: Magic string
         $atmelStudioPath = "C:\Program Files (x86)\Atmel\Studio\7.0\AtmelStudio.exe"
 
         # deploy the include files to the ${env:INCLUDE} directory
@@ -71,6 +63,15 @@ function ScriptMain() {
             $dateTime = Get-Date -Format FileDateTime
 
             # create log directory if doesn't exist
+
+            # TODO HACK: Magic string
+            $logFileDir = [io.path]::combine(
+                $env:TEMP,
+                "build", 
+                $projectRelDir,
+                $buildConfig
+            ).toLower()
+
             New-Item -ItemType Directory -Force -Path $logFileDir | Out-Null
 
             $logFileName = $(
@@ -80,12 +81,13 @@ function ScriptMain() {
 
             $logFilePath = [io.path]::combine(
                 $logFileDir,
-                $buildConfig,
                 $logFileName
             ).toLower()
 
+            # $logFilePath = "C:\Users\azy48\Desktop\test.txt"
+
             # build using Atmel Studio command line
-            Start-Process -Wait $atmelStudioPath -ArgumentList "$projectPath /build $buildConfig /out $logFilePath"
+            Start-Process -Wait $atmelStudioPath -ArgumentList "${projectPath} /build ${buildConfig} /out ${logFilePath}"
 
             # print the build results
             $output = (Get-Content -Path $logFilePath) -join "`n"
